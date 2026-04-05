@@ -3,8 +3,10 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Loader2, Sparkles, FileText, AlertCircle, ChevronDown, ChevronUp, Copy, Check, Download, Upload, X, ArrowRight } from 'lucide-react';
 import { cn } from './lib/utils';
-import avatarImg from '../public/avatar.png';
-import logoImg from '../public/rogo.png';
+import { avatarBase64, logoBase64 } from './assets/images';
+
+const avatarImg = avatarBase64;
+const logoImg = logoBase64;
 
 const CATEGORIES = [
   '선택해주세요',
