@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { GoogleGenAI } from '@google/genai';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Loader2, Sparkles, FileText, AlertCircle, ChevronDown, ChevronUp, Copy, Check, Download, Upload, X, ArrowRight } from 'lucide-react';
@@ -243,53 +242,19 @@ ${outputStructure}
 위 정보를 바탕으로 상세페이지 기획안을 작성해주세요.`;
 
     try {
-      const apiKey = process.env.GEMINI_API_KEY;
-      
-      if (!apiKey) {
-        throw new Error('API 키가 설정되지 않았습니다. Vercel의 Environment Variables에 GEMINI_API_KEY가 정확히 등록되었는지, 그리고 Redeploy를 했는지 확인해주세요.');
-      }
-
-      const ai = new GoogleGenAI({ apiKey });
-      
-      let apiContents: any = prompt;
-      if (attachedFiles.length > 0) {
-        apiContents = {
-          parts: [
-            { text: prompt },
-            ...attachedFiles.map(f => ({
-              inlineData: { data: f.data, mimeType: f.mimeType }
-            }))
-          ]
-        };
-      }
-
-      const response = await ai.models.generateContentStream({
-        model: 'gemini-3.1-pro-preview',
-        contents: apiContents,
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, attachedFiles }),
       });
 
-      let fullText = '';
-      for await (const chunk of response) {
-        if (chunk.text) {
-          fullText += chunk.text;
-          setResult(fullText);
-        }
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '기획안 생성 실패');
+
+      setResult(data.text);
     } catch (err: any) {
-      console.error("Gemini API Error:", err);
-      
-      let errorMessage = err.message || '기획안을 생성하는 중 오류가 발생했습니다.';
-      
-      // Provide more helpful error messages for common API issues
-      if (errorMessage.includes('API key not valid') || errorMessage.includes('API_KEY_INVALID')) {
-        errorMessage = 'API 키가 유효하지 않습니다. 구글 AI Studio에서 발급받은 키를 정확히 복사했는지 확인해주세요.';
-      } else if (errorMessage.includes('fetch')) {
-        errorMessage = '네트워크 오류가 발생했습니다. 인터넷 연결을 확인하거나 잠시 후 다시 시도해주세요.';
-      } else if (errorMessage.includes('quota') || errorMessage.includes('429')) {
-        errorMessage = 'API 사용량을 초과했습니다. 잠시 후 다시 시도해주세요.';
-      }
-      
-      setError(`[오류] ${errorMessage}`);
+      console.error("API Error:", err);
+      setError(`[오류] ${err.message || '기획안을 생성하는 중 오류가 발생했습니다.'}`);
     } finally {
       setLoading(false);
     }
