@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Loader2, Sparkles, FileText, AlertCircle, ChevronDown, ChevronUp, Copy, Check, Download, Upload, X, ArrowRight } from 'lucide-react';
+import { GoogleGenAI } from '@google/genai';
 import { cn } from './lib/utils';
 import { avatarBase64, logoBase64 } from './assets/images';
 
@@ -246,16 +247,37 @@ ${outputStructure}
 위 정보를 바탕으로 상세페이지 기획안을 작성해주세요.`;
 
     try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, attachedFiles }),
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error('Gemini API Key가 설정되지 않았습니다. Vercel 환경 변수를 확인해주세요.');
+      }
+
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      
+      const contents: any[] = [];
+      
+      if (attachedFiles && attachedFiles.length > 0) {
+        attachedFiles.forEach(file => {
+          contents.push({
+            inlineData: {
+              data: file.data,
+              mimeType: file.mimeType
+            }
+          });
+        });
+      }
+      
+      contents.push(prompt);
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-pro',
+        contents: contents,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || '기획안 생성 실패');
+      if (!response.text) {
+        throw new Error('응답을 생성하지 못했습니다.');
+      }
 
-      setResult(data.text);
+      setResult(response.text);
     } catch (err: any) {
       console.error("API Error:", err);
       setError(`[오류] ${err.message || '기획안을 생성하는 중 오류가 발생했습니다.'}`);
