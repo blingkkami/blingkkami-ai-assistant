@@ -4,6 +4,8 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Loader2, Sparkles, FileText, AlertCircle, ChevronDown, ChevronUp, Copy, Check, Download, Upload, X, ArrowRight } from 'lucide-react';
 import { cn } from './lib/utils';
+import avatarImg from '../public/avatar.png';
+import logoImg from '../public/rogo.png';
 
 const CATEGORIES = [
   '선택해주세요',
@@ -330,14 +332,14 @@ ${outputStructure}
         <div className="relative z-10 flex flex-col items-center">
           <div className="animate-float">
             <img 
-              src="/avatar.png" 
+              src={avatarImg} 
               alt="Blingkkami Avatar" 
               className="w-64 sm:w-80 h-auto drop-shadow-[0_0_40px_rgba(168,85,247,0.4)] mb-6" 
             />
           </div>
           
           <img 
-            src="/rogo.png" 
+            src={logoImg} 
             alt="Blingkkami Logo" 
             className="h-16 sm:h-20 object-contain mb-4 drop-shadow-lg" 
           />
@@ -381,7 +383,7 @@ ${outputStructure}
       <header className="bg-black border-b border-purple-900/50 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/rogo.png" alt="Blingkkami" className="h-8 object-contain" />
+            <img src={logoImg} alt="Blingkkami" className="h-8 object-contain" />
             <div className="hidden sm:block">
               <p className="text-xs text-purple-300/80">상세페이지 기획 AI 어시스턴트</p>
             </div>
@@ -671,7 +673,7 @@ ${outputStructure}
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-zinc-400 space-y-4 py-32">
-                <img src="/avatar.png" alt="Blingkkami" className="w-48 h-auto mb-2 drop-shadow-2xl" />
+                <img src={avatarImg} alt="Blingkkami" className="w-48 h-auto mb-2 drop-shadow-2xl" />
                 <h3 className="text-xl font-medium text-purple-300">블링까미가 상세페이지 기획안을 작성해 드릴게요! 💜</h3>
                 <p className="text-center text-sm max-w-sm text-zinc-500">
                   좌측 폼에 제품 정보를 상세히 입력할수록<br />
