@@ -253,11 +253,11 @@ ${outputStructure}
 
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       
-      const contents: any[] = [];
+      const parts: any[] = [];
       
       if (attachedFiles && attachedFiles.length > 0) {
         attachedFiles.forEach(file => {
-          contents.push({
+          parts.push({
             inlineData: {
               data: file.data,
               mimeType: file.mimeType
@@ -266,11 +266,11 @@ ${outputStructure}
         });
       }
       
-      contents.push(prompt);
+      parts.push({ text: prompt });
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-pro',
-        contents: contents,
+        model: 'gemini-3.1-pro-preview',
+        contents: { parts },
       });
 
       if (!response.text) {
